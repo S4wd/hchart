@@ -5,6 +5,7 @@
 		<title>Highcharts Example</title>
 		
 		<script type="text/javascript" src="jquery.min.js"></script>
+		
 		<style type="text/css">
 			${demo.css}
 		</style>
@@ -16,7 +17,7 @@
 				
 			$.ajax({
 				type: "GET",
-				url: "D_Fri_12_06_13_04.csv",
+				url: "D_Fri_12_06_13_04.log",
 				dataType: "text",
 				success: function(data) {
 					console.log('ajax read');
@@ -44,7 +45,9 @@
 					
 					$('#container').highcharts({
 							chart: {
-								zoomType: 'x'
+								zoomType: 'x',
+								panning: true,
+								panKey: 'ctrl'							
 							},
 							title: {
 								text: 'Solar 4wd Data Viewer',
@@ -55,20 +58,63 @@
 								x: -20
 							},
 							xAxis: {
-								categories: datetime
-							},
-							yAxis: {
-								title: {
-									text: 'Temperature (°C)'
+								categories: datetime,
+								crosshair: true,
+								tickPositioner: function() { 
+									var positions = [],
+										tick = Math.floor(this.dataMin),
+										increment = Math.ceil((this.dataMax - this.dataMin) / 10);
+
+									for (tick; tick - increment <= this.dataMax; tick += increment) {
+										positions.push(tick);
+									}
+									return positions;			
 								},
-								plotLines: [{
-									value: 0,
-									width: 1,
-									color: '#808080'
-								}]
+								labels: {rotation: 270},
+								tickmarkPlacement: 'on'
+				
 							},
+							yAxis: [{
+								title: {text: 'Temperature (°C)',
+										style: {color: Highcharts.getOptions().colors[0]}},
+								min: 0,
+								max: 125,
+								plotLines: [{value: 0, width: 1, color: '#808080'}],
+								labels: {style: {color: Highcharts.getOptions().colors[0]}}
+							},{
+								title: {text: 'Current (A)',
+										style: {color: Highcharts.getOptions().colors[3]}},
+								min: 0,
+								max: 400,
+								plotLines: [{value: 0, width: 1, color: '#808080'}],
+								labels: {style: {color: Highcharts.getOptions().colors[3]}}
+							},{
+								title: {text: 'Voltage (V)',
+										style: {color: Highcharts.getOptions().colors[2]}},
+								min: 42,
+								max: 60,
+								plotLines: [{value: 0, width: 1, color: '#808080'}],
+								labels: {style: {color: Highcharts.getOptions().colors[2]}}
+							},{
+								title: {text: 'Altitude (m)',
+										style: {color: Highcharts.getOptions().colors[5]}},
+								min: 50,
+								max: 200,
+								plotLines: [{value: 0, width: 1, color: '#808080'}],
+								labels: {style: {color: Highcharts.getOptions().colors[5]}}
+							},{
+								title: {text: 'Speed (km/h)',
+										style: {color: Highcharts.getOptions().colors[4]}},
+								min: 0,
+								max: 50,
+								plotLines: [{value: 0, width: 1, color: '#808080'}],
+								labels: {style: {color: Highcharts.getOptions().colors[4]}}
+							}],
+							plotOptions: {series: {marker:{enabled: false}},
+										  turboThreshold: 0},
+							
 							tooltip: {
-								valueSuffix: '°C'
+								shared: true
 							},
 							legend: {
 								layout: 'vertical',
@@ -77,32 +123,48 @@
 								borderWidth: 0
 							},
 							series: [{
-								name: 'MotorT',
-								data: motor
+								name: 'Motor Temperature',
+								yAxis: 0,
+								data: motor,
+								visible: true,
+								tooltip: {valueSuffix: ' °C'}
 							}, {
-								name: 'ControllerT',
-								data: controller
+								name: 'Controller Temperature',
+								yAxis: 0,
+								data: controller,
+								visible: true,
+								tooltip: {valueSuffix: ' °C'}
 							}, {
-								name: 'Volts',
-								data: volts
+								name: 'Voltage',
+								yAxis: 2,
+								data: volts,
+								visible: true,
+								tooltip: {valueSuffix: ' V'}
 							}, {
-								name: 'Amps',
-								data: amps
+								name: 'Current',
+								yAxis: 1,
+								data: amps,
+								visible: true,
+								tooltip: {valueSuffix: ' A'}
 							}, {
 								name: 'Speed',
-								data: speed
+								yAxis: 4,
+								data: speed,
+								visible: true,
+								tooltip: {valueSuffix: ' km/h'}
 							}, {
 								name: 'Altitude',
-								data: altitude
+								yAxis: 3,
+								data: altitude,
+								visible: true,
+								tooltip: {valueSuffix: ' m'}
 							}]
 						});						
 					}
 				});				
 			});
 			
-			console.log('hello');
-			
-			
+		
 			
 			
 		</script>
@@ -110,6 +172,7 @@
 	<body>
 		<script src="highcharts.js"></script>
 		<script src="exporting.js"></script>
-		<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="container" style="min-width: 310px; height: 700px; margin: 0 auto"></div>
+		<script src="dark-unica.js"></script>
 	</body>
 </html>
