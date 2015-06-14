@@ -1,0 +1,115 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Highcharts Example</title>
+		
+		<script type="text/javascript" src="jquery.min.js"></script>
+		<style type="text/css">
+			${demo.css}
+		</style>
+		<script type="text/javascript">
+		
+		$(document).ready(function() {
+			
+			
+				
+			$.ajax({
+				type: "GET",
+				url: "D_Fri_12_06_13_04.csv",
+				dataType: "text",
+				success: function(data) {
+					console.log('ajax read');
+					
+					var datetime = [];
+					var speed = [];
+					var altitude = [];
+					var volts = [];
+					var amps = [];
+					var motor = [];
+					var controller = [];
+					
+					var lines = data.split('\n');		
+					$.each(lines, function(lineNo, line) {
+						
+						var items = line.split(',');			
+						datetime.push(items[0]);
+						motor.push(parseFloat(items[1]));
+						controller.push(parseFloat(items[2]));
+						volts.push(parseFloat(items[3]));
+						amps.push(parseFloat(items[4]));
+						altitude.push(parseFloat(items[5]));
+						speed.push(parseFloat(items[7]));
+					});
+					
+					$('#container').highcharts({
+							chart: {
+								zoomType: 'x'
+							},
+							title: {
+								text: 'Solar 4wd Data Viewer',
+								x: -20 //center
+							},
+							subtitle: {
+								text: 'Drive profile',
+								x: -20
+							},
+							xAxis: {
+								categories: datetime
+							},
+							yAxis: {
+								title: {
+									text: 'Temperature (°C)'
+								},
+								plotLines: [{
+									value: 0,
+									width: 1,
+									color: '#808080'
+								}]
+							},
+							tooltip: {
+								valueSuffix: '°C'
+							},
+							legend: {
+								layout: 'vertical',
+								align: 'right',
+								verticalAlign: 'middle',
+								borderWidth: 0
+							},
+							series: [{
+								name: 'MotorT',
+								data: motor
+							}, {
+								name: 'ControllerT',
+								data: controller
+							}, {
+								name: 'Volts',
+								data: volts
+							}, {
+								name: 'Amps',
+								data: amps
+							}, {
+								name: 'Speed',
+								data: speed
+							}, {
+								name: 'Altitude',
+								data: altitude
+							}]
+						});						
+					}
+				});				
+			});
+			
+			console.log('hello');
+			
+			
+			
+			
+		</script>
+	</head>
+	<body>
+		<script src="highcharts.js"></script>
+		<script src="exporting.js"></script>
+		<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+	</body>
+</html>
